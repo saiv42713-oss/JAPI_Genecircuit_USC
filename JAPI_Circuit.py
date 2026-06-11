@@ -1,6 +1,7 @@
 from enum import Enum
 from dataclasses import dataclass
 from itertools import product
+from xml.etree.ElementTree import PI
 import networkx as nx
 import json
 import numpy as np
@@ -331,3 +332,15 @@ def run_pipeline():
     for i, idx in enumerate(top_turing_indices):
         draw_circuit(graphs[idx], filename=f"circuit_{i}.png")
 run_pipeline()
+
+#-------------------------------------#
+## What's next:
+    # 1. Wait for PI answers on parameters, constraints, scope, and LLM scorer criteria
+    # 2. Implement circuit-specific parameters for check_turing based on PI input
+    # 3. Add regime classification (Uniform OFF, Uniform ON, Periodic, Irregular) to match poster
+    # 4. Validate pipeline against all Fig S15 circuits beyond JAPI and PAPI
+    # 5. Polish diagrams to publication quality — better node positions, legend, labels
+    # 6. Refactor into JAPI_Circuit class with methods for generation, validation, drawing, export
+    # 7. Potentially add a method to export to SBML or another standard format for broader use
+    # 8. Integrate LLM scorer based on PI criteria
+    # 9. Extend to 3-node circuits if PI confirms
