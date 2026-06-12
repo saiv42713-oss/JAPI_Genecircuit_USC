@@ -111,3 +111,35 @@ if __name__ == "__main__":
     for ba, bi in test_cases:
         regime = classify_regime(ba, bi)
         print(f"ba={ba}, bi={bi} → {regime}")
+def classify_regime_and_return_fields(act_prod_rate, inh_prod_rate):
+    params = {**BASE_PARAMS,
+              "act_prod_rate": act_prod_rate,
+              "inh_prod_rate": inh_prod_rate}
+    A_hist, R_hist, final_step, a_ss, i_ss = run_coupled_hex(
+        SIM_PARAMS["Ny"], SIM_PARAMS["Nx"],
+        SIM_PARAMS["steps"], SIM_PARAMS["dt"], SIM_PARAMS["dx"],
+        params,
+        SIM_PARAMS["stopping_threshold"],
+        SIM_PARAMS["min_steps"],
+        init_mode="random_uniform_over0",
+        activator_type="juxtacrine",
+        spike_value=SIM_PARAMS["spike_value"],
+        save_every=SIM_PARAMS["save_every"]
+    )
+    return A_hist[-1], R_hist[-1]
+def classify_from_metrics(metrics, a_ss):
+    # ON — caught by variance floor upstream
+    if metrics.get("regime") == "flat_or_noise":
+        if metrics.get("mean_A", 0) > 0.1:
+            return "ON"
+        return "OFF"
+    
+    # OFF — near-zero prominence and tiny features
+    if metrics["prominence"] < 0.01:
+        return "OFF"
+    
+    # TURING vs IRREGULAR — feature size is the key
+    if metrics.get("feature_size", 0) > 35:
+        return "TURING"
+    else:
+        return "IRREGULAR"
